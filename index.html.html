@@ -1,0 +1,1663 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EduConnect | Quality Education for Everyone</title>
+<meta name="description" content="EduConnect is a student-led social initiative working towards UN SDG 4: Quality Education. Free video resources, scholarships and career guidance for all.">
+
+<!-- Google Fonts removed intentionally so the site works fully offline. -->
+<style>
+/* =========================================================
+   EDUCONNECT STYLESHEET
+   Organized in sections: Reset, Variables, Typography,
+   Layout helpers, Header/Nav, Hero, Sections, Cards,
+   Forms, Footer, Utilities, Responsive
+   ========================================================= */
+
+/* ---------- 1. RESET ---------- */
+*, *::before, *::after { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body, h1, h2, h3, h4, p, ul, figure, blockquote { margin: 0; }
+ul { padding: 0; list-style: none; }
+img, svg { display: block; max-width: 100%; }
+button, input, textarea { font: inherit; color: inherit; }
+button { cursor: pointer; background: none; border: none; }
+a { color: inherit; text-decoration: none; }
+
+/* Respect reduced motion preference */
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after { animation-duration: 0.001ms !important; animation-iteration-count: 1 !important; transition-duration: 0.001ms !important; }
+}
+
+/* ---------- 2. DESIGN TOKENS ---------- */
+:root {
+  /* Brand palette */
+  --brand-navy: #124559;      /* deep blue - trust, primary */
+  --brand-navy-dark: #0B2D3A;
+  --brand-teal: #2D9CDB;      /* secondary accent - clarity */
+  --brand-amber: #F2A93B;     /* warm accent - hope, energy */
+  --brand-amber-dark: #D98E1F;
+
+  /* Neutrals - light theme */
+  --bg: #F7F9FB;
+  --surface-1: #FFFFFF;
+  --surface-2: #EEF3F6;
+  --text-primary: #1F2937;
+  --text-secondary: #52606D;
+  --border-color: #DDE5EA;
+  --success: #1E8E5A;
+  --error: #C0392B;
+
+  /* Shadows & radius */
+  --shadow-sm: 0 1px 3px rgba(18, 69, 89, 0.08);
+  --shadow-md: 0 8px 24px rgba(18, 69, 89, 0.12);
+  --radius-sm: 8px;
+  --radius-md: 14px;
+  --radius-lg: 22px;
+
+  /* Type scale - using safe system stacks so the site renders
+     identically with zero internet connection required */
+  --font-display: "Segoe UI", "Poppins", Verdana, system-ui, -apple-system, sans-serif;
+  --font-body: "Segoe UI", system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif;
+
+  --header-height: 72px;
+}
+
+/* Dark theme overrides, toggled via [data-theme="dark"] on <html> */
+[data-theme="dark"] {
+  --bg: #0E1B22;
+  --surface-1: #16262F;
+  --surface-2: #1D323D;
+  --text-primary: #EAF2F5;
+  --text-secondary: #9FB3BC;
+  --border-color: #2A3F49;
+  --brand-amber: #F5B85C;
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.35);
+  --shadow-md: 0 8px 24px rgba(0,0,0,0.45);
+}
+
+/* ---------- 3. BASE TYPOGRAPHY ---------- */
+body {
+  font-family: var(--font-body);
+  background: var(--bg);
+  color: var(--text-primary);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  transition: background 0.3s ease, color 0.3s ease;
+}
+
+h1, h2, h3, h4 { font-family: var(--font-display); font-weight: 700; color: var(--text-primary); line-height: 1.25; }
+h1 { font-size: clamp(2rem, 4vw, 3.1rem); letter-spacing: -0.02em; }
+h2 { font-size: clamp(1.5rem, 2.6vw, 2rem); }
+h3 { font-size: 1.2rem; }
+p { color: var(--text-secondary); }
+
+.section-title { margin-bottom: 1.5rem; }
+.section-title.center { text-align: center; }
+
+.accent { color: var(--brand-amber); }
+
+.text-link { color: var(--brand-teal); font-weight: 600; display: inline-block; margin-top: 0.5rem; }
+.text-link:hover { text-decoration: underline; }
+
+/* ---------- 4. LAYOUT HELPERS ---------- */
+.container { max-width: 1180px; margin: 0 auto; padding: 0 24px; }
+.section { padding: 72px 0; }
+.page-head { text-align: center; padding: 56px 0 24px; }
+.page-head h1 { margin-bottom: 0.5rem; }
+.page-head p { max-width: 620px; margin: 0 auto; font-size: 1.05rem; }
+
+/* Focus visibility for accessibility */
+a:focus-visible, button:focus-visible, input:focus-visible, textarea:focus-visible {
+  outline: 3px solid var(--brand-teal);
+  outline-offset: 2px;
+}
+
+.skip-link {
+  position: absolute; left: -999px; top: 0;
+  background: var(--brand-navy); color: #fff; padding: 12px 18px;
+  z-index: 2000; border-radius: 0 0 8px 0;
+}
+.skip-link:focus { left: 0; }
+
+/* ---------- 5. PAGE LOADER ---------- */
+#page-loader {
+  position: fixed; inset: 0; z-index: 3000;
+  background: var(--brand-navy);
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 18px;
+  transition: opacity 0.5s ease, visibility 0.5s ease;
+}
+#page-loader p { color: #cfe3ec; font-weight: 600; letter-spacing: 0.02em; }
+#page-loader.loaded { opacity: 0; visibility: hidden; pointer-events: none; }
+.loader-mark { position: relative; width: 70px; height: 70px; display: flex; align-items: center; justify-content: center; }
+.loader-ring {
+  position: absolute; inset: 0; border-radius: 50%;
+  border: 4px solid rgba(242,169,59,0.25); border-top-color: var(--brand-amber);
+  animation: spin 0.9s linear infinite;
+}
+.loader-book { font-size: 28px; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ---------- 6. HEADER / NAV ---------- */
+#site-header {
+  position: sticky; top: 0; z-index: 900;
+  background: var(--surface-1);
+  border-bottom: 1px solid var(--border-color);
+  height: var(--header-height);
+  display: flex; align-items: center;
+  transition: background 0.3s ease;
+}
+.nav-wrap { display: flex; align-items: center; justify-content: space-between; width: 100%; gap: 16px; }
+
+.brand { display: flex; align-items: center; gap: 10px; }
+.brand-text { font-family: var(--font-display); font-weight: 800; font-size: 1.25rem; color: var(--brand-navy); }
+[data-theme="dark"] .brand-text { color: var(--brand-amber); }
+
+.nav-links { display: flex; align-items: center; gap: 4px; flex-wrap: wrap; }
+.nav-link {
+  display: inline-block; padding: 10px 14px; border-radius: var(--radius-sm);
+  font-weight: 600; font-size: 0.94rem; color: var(--text-secondary);
+  transition: background 0.2s ease, color 0.2s ease;
+}
+.nav-link:hover { background: var(--surface-2); color: var(--brand-navy); }
+.nav-link.active { color: var(--brand-navy); background: var(--surface-2); }
+[data-theme="dark"] .nav-link.active,
+[data-theme="dark"] .nav-link:hover { color: var(--brand-amber); }
+
+.nav-actions { display: flex; align-items: center; gap: 8px; }
+.icon-btn {
+  width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+  background: var(--surface-2); font-size: 1.1rem; transition: transform 0.2s ease, background 0.2s ease;
+}
+.icon-btn:hover { transform: translateY(-2px); background: var(--brand-amber); }
+.lang-btn { width: auto; padding: 0 12px; border-radius: 999px; font-size: 0.8rem; font-weight: 700; letter-spacing: 0.02em; }
+
+.hamburger { display: none; flex-direction: column; gap: 4px; }
+.hamburger .bar { width: 20px; height: 2px; background: var(--text-primary); border-radius: 2px; transition: transform 0.25s ease, opacity 0.25s ease; }
+.hamburger[aria-expanded="true"] .bar:nth-child(1) { transform: translateY(6px) rotate(45deg); }
+.hamburger[aria-expanded="true"] .bar:nth-child(2) { opacity: 0; }
+.hamburger[aria-expanded="true"] .bar:nth-child(3) { transform: translateY(-6px) rotate(-45deg); }
+
+/* ---------- 7. HERO ---------- */
+.hero { padding: 64px 0 40px; overflow: hidden; }
+.hero-grid { display: grid; grid-template-columns: 1.1fr 0.9fr; align-items: center; gap: 40px; }
+.eyebrow {
+  text-transform: uppercase; letter-spacing: 0.12em; font-size: 0.78rem; font-weight: 700;
+  color: var(--brand-teal); margin-bottom: 10px;
+}
+.hero-copy h1 { margin-bottom: 18px; }
+.hero-mission { font-size: 1.08rem; max-width: 520px; margin-bottom: 28px; }
+.hero-actions { display: flex; gap: 14px; flex-wrap: wrap; margin-bottom: 24px; }
+.hero-trust { display: flex; flex-wrap: wrap; gap: 18px; font-size: 0.86rem; color: var(--text-secondary); font-weight: 600; }
+
+.hero-visual { display: flex; justify-content: center; }
+.hero-svg { width: 100%; max-width: 400px; }
+.float-slow { animation: floaty 4s ease-in-out infinite; transform-origin: center; }
+@keyframes floaty { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+.orbit-dot { animation: pulse 2.4s ease-in-out infinite; }
+@keyframes pulse { 0%,100% { opacity: 0.4; } 50% { opacity: 1; } }
+
+/* ---------- 8. BUTTONS ---------- */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  padding: 13px 24px; border-radius: 999px; font-weight: 700; font-size: 0.95rem;
+  transition: transform 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
+  border: 2px solid transparent; white-space: nowrap;
+}
+.btn-primary { background: var(--brand-navy); color: #fff; box-shadow: var(--shadow-sm); }
+.btn-primary:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); background: var(--brand-navy-dark); }
+.btn-outline { border-color: var(--brand-navy); color: var(--brand-navy); }
+.btn-outline:hover { background: var(--brand-navy); color: #fff; transform: translateY(-2px); }
+[data-theme="dark"] .btn-outline { border-color: var(--brand-amber); color: var(--brand-amber); }
+[data-theme="dark"] .btn-outline:hover { background: var(--brand-amber); color: var(--brand-navy-dark); }
+.btn-lg { padding: 15px 32px; font-size: 1rem; }
+.btn-small { padding: 9px 16px; font-size: 0.85rem; background: var(--surface-2); color: var(--brand-navy); border-radius: var(--radius-sm); }
+.btn-small:hover { background: var(--brand-amber); }
+
+/* ---------- 9. PAGES (SPA-STYLE SECTIONS) ---------- */
+.page { display: none; animation: fadeIn 0.4s ease; }
+.page.active-page { display: block; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+/* ---------- 10. MISSION / SDG SECTIONS ---------- */
+.mission-grid { display: grid; grid-template-columns: 1.2fr 1fr; gap: 40px; align-items: center; }
+.mission-points { display: flex; flex-direction: column; gap: 18px; }
+.point { display: flex; align-items: flex-start; gap: 14px; background: var(--surface-1); border: 1px solid var(--border-color); padding: 16px; border-radius: var(--radius-md); box-shadow: var(--shadow-sm); }
+.point-icon { font-size: 1.4rem; }
+.point p { margin: 0; color: var(--text-primary); font-weight: 600; }
+
+.sdg-section .sdg-card {
+  display: grid; grid-template-columns: 140px 1fr; gap: 32px; align-items: start;
+  background: var(--surface-1); border: 1px solid var(--border-color); border-radius: var(--radius-lg);
+  padding: 36px; box-shadow: var(--shadow-sm);
+}
+.sdg-badge {
+  width: 120px; height: 120px; border-radius: var(--radius-md); background: var(--brand-navy); color: #fff;
+  display: flex; align-items: center; justify-content: center; font-family: var(--font-display);
+  font-weight: 800; font-size: 1.3rem; text-align: center;
+}
+.sdg-list { margin-top: 12px; display: flex; flex-direction: column; gap: 8px; }
+.sdg-list li { position: relative; padding-left: 22px; color: var(--text-secondary); }
+.sdg-list li::before { content: "✓"; position: absolute; left: 0; color: var(--brand-teal); font-weight: 800; }
+
+/* ---------- 12. GETTING STARTED STEPS ---------- */
+.steps-track { display: grid; grid-template-columns: repeat(4, 1fr); gap: 22px; }
+.step-card { background: var(--surface-1); border-radius: var(--radius-md); padding: 28px 22px; box-shadow: var(--shadow-sm); }
+.step-number {
+  display: inline-flex; align-items: center; justify-content: center; width: 34px; height: 34px;
+  border-radius: 50%; background: var(--brand-navy); color: #fff; font-weight: 800; font-size: 0.95rem; margin-bottom: 14px;
+}
+[data-theme="dark"] .step-number { background: var(--brand-amber); color: var(--brand-navy-dark); }
+.step-card h3 { font-size: 1.05rem; margin-bottom: 6px; }
+.step-card p { color: var(--text-secondary); font-size: 0.92rem; }
+
+/* ---------- 13. CTA ---------- */
+.cta-section { padding-bottom: 96px; }
+.cta-box {
+  background: linear-gradient(135deg, var(--brand-navy), var(--brand-navy-dark));
+  color: #fff; border-radius: var(--radius-lg); padding: 52px 32px; text-align: center;
+}
+.cta-box h2 { color: #fff; margin-bottom: 10px; }
+.cta-box p { color: #cfe3ec; margin-bottom: 24px; }
+
+/* ---------- 14. CARDS GRID (generic) ---------- */
+.cards-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(270px, 1fr)); gap: 22px; padding-bottom: 72px; }
+
+.filter-chips { display: flex; gap: 8px; flex-wrap: wrap; }
+.chip {
+  padding: 9px 16px; border-radius: 999px; border: 1px solid var(--border-color); background: var(--surface-1);
+  font-weight: 600; font-size: 0.85rem; color: var(--text-secondary); transition: all 0.2s ease;
+}
+.chip:hover { border-color: var(--brand-teal); }
+.chip.active { background: var(--brand-navy); color: #fff; border-color: var(--brand-navy); }
+
+.career-card, .scholarship-card {
+  background: var(--surface-1); border: 1px solid var(--border-color); border-radius: var(--radius-md);
+  padding: 26px; box-shadow: var(--shadow-sm); transition: transform 0.2s ease, box-shadow 0.2s ease;
+  display: flex; flex-direction: column; gap: 8px;
+}
+.career-card:hover, .scholarship-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-md); }
+
+.career-card p, .scholarship-card p.scholarship-row { font-size: 0.92rem; }
+.career-card strong, .scholarship-row strong { color: var(--text-primary); }
+.scholarship-card .btn { margin-top: 10px; align-self: flex-start; }
+
+/* ---------- 15. RESOURCES PAGE ---------- */
+.resource-block { padding-bottom: 56px; }
+.block-title { margin-bottom: 8px; }
+.block-intro { color: var(--text-secondary); margin-bottom: 20px; font-size: 0.95rem; }
+.learning-paths, .how-to-study { padding-bottom: 56px; }
+
+.path-card {
+  background: var(--surface-1); border: 1px solid var(--border-color); border-radius: var(--radius-md);
+  padding: 22px; box-shadow: var(--shadow-sm);
+}
+.path-card h4 { margin-bottom: 12px; }
+.path-card ol { margin: 0; padding-left: 20px; display: flex; flex-direction: column; gap: 10px; }
+.path-card li { font-size: 0.92rem; color: var(--text-secondary); line-height: 1.5; }
+.path-card li a { color: var(--brand-teal); font-weight: 700; }
+.path-card li a:hover { text-decoration: underline; }
+
+.study-tip-card {
+  background: var(--surface-1); border: 1px solid var(--border-color); border-radius: var(--radius-md);
+  padding: 22px; box-shadow: var(--shadow-sm);
+}
+.study-tip-card h4 { margin-bottom: 8px; }
+.study-tip-card p { font-size: 0.92rem; color: var(--text-secondary); line-height: 1.5; }
+
+.video-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 22px; }
+.video-card { background: var(--surface-1); border: 1px solid var(--border-color); border-radius: var(--radius-md); overflow: hidden; box-shadow: var(--shadow-sm); }
+.video-frame { position: relative; display: block; width: 100%; padding-top: 56.25%; background: #000; }
+.video-frame img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.play-overlay {
+  position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+  width: 58px; height: 58px; border-radius: 50%; background: rgba(0,0,0,0.65);
+  color: #fff; display: flex; align-items: center; justify-content: center;
+  font-size: 1.4rem; padding-left: 4px; transition: background 0.2s ease, transform 0.2s ease;
+}
+.video-frame:hover .play-overlay { background: var(--brand-teal); transform: translate(-50%, -50%) scale(1.08); }
+.video-card h4 { padding: 14px 16px 0; }
+.video-card p { padding: 4px 16px 16px; font-size: 0.85rem; }
+
+.resource-link-card {
+  display: block; background: var(--surface-1); border: 1px solid var(--border-color); border-radius: var(--radius-md);
+  padding: 22px; box-shadow: var(--shadow-sm); transition: transform 0.2s ease, border-color 0.2s ease;
+}
+.resource-link-card:hover { transform: translateY(-4px); border-color: var(--brand-teal); }
+.resource-link-card h4 { color: var(--brand-navy); margin-bottom: 6px; }
+[data-theme="dark"] .resource-link-card h4 { color: var(--brand-amber); }
+
+.book-card {
+  display: flex; flex-direction: column; gap: 6px; background: var(--surface-1); border: 1px solid var(--border-color);
+  border-radius: var(--radius-md); padding: 22px; box-shadow: var(--shadow-sm); transition: transform 0.2s ease, border-color 0.2s ease;
+}
+.book-card:hover { transform: translateY(-4px); border-color: var(--brand-teal); }
+.book-card h4 { color: var(--brand-navy); }
+[data-theme="dark"] .book-card h4 { color: var(--brand-amber); }
+.book-spine { font-size: 1.8rem; }
+.book-link-label { margin-top: 4px; font-size: 0.82rem; font-weight: 700; color: var(--brand-teal); }
+
+/* ---------- 17. FORMS ---------- */
+.form-wrap { max-width: 640px; margin: 0 auto 72px; background: var(--surface-1); border: 1px solid var(--border-color); border-radius: var(--radius-lg); padding: 36px; box-shadow: var(--shadow-sm); }
+.form-row { margin-bottom: 20px; display: flex; flex-direction: column; gap: 6px; }
+.form-row label { font-weight: 700; font-size: 0.92rem; }
+.req { color: var(--error); }
+.form-row input, .form-row textarea, .form-row select {
+  padding: 12px 14px; border-radius: var(--radius-sm); border: 1px solid var(--border-color);
+  background: var(--surface-2); color: var(--text-primary); resize: vertical; font-family: inherit; font-size: 1rem;
+}
+.form-row input.invalid, .form-row textarea.invalid { border-color: var(--error); }
+.error-msg { color: var(--error); font-size: 0.82rem; min-height: 16px; }
+.success-msg { margin-top: 16px; color: var(--success); font-weight: 700; background: rgba(30,142,90,0.12); padding: 12px 16px; border-radius: var(--radius-sm); }
+
+.contact-grid { max-width: 640px; margin: 0 auto; padding-bottom: 72px; }
+
+/* ---------- 18. ABOUT ---------- */
+.about-grid { display: grid; grid-template-columns: 1.4fr 1fr; gap: 40px; padding-bottom: 60px; }
+.about-block h2 { margin-top: 28px; margin-bottom: 10px; }
+.about-block h2:first-child { margin-top: 0; }
+.about-list { display: flex; flex-direction: column; gap: 8px; }
+.about-list li { position: relative; padding-left: 22px; }
+.about-list li::before { content: "→"; position: absolute; left: 0; color: var(--brand-teal); font-weight: 800; }
+.about-side { display: flex; flex-direction: column; gap: 14px; }
+.about-card { background: var(--surface-1); border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 18px 20px; box-shadow: var(--shadow-sm); }
+.about-card h3 { font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--brand-teal); margin-bottom: 4px; }
+
+/* FAQ */
+.faq-section { padding-bottom: 80px; }
+.faq-list { max-width: 760px; margin: 0 auto; display: flex; flex-direction: column; gap: 12px; }
+.faq-item { border: 1px solid var(--border-color); border-radius: var(--radius-md); overflow: hidden; background: var(--surface-1); }
+.faq-question { width: 100%; text-align: left; padding: 18px 20px; font-weight: 700; display: flex; justify-content: space-between; align-items: center; }
+.faq-toggle { font-size: 1.2rem; color: var(--brand-teal); transition: transform 0.25s ease; }
+.faq-question[aria-expanded="true"] .faq-toggle { transform: rotate(45deg); }
+.faq-answer { max-height: 0; overflow: hidden; transition: max-height 0.3s ease, padding 0.3s ease; padding: 0 20px; }
+.faq-item.open .faq-answer { max-height: 200px; padding: 0 20px 18px; }
+
+/* ---------- 19. FOOTER ---------- */
+#site-footer { background: var(--brand-navy-dark); color: #cfe3ec; padding: 56px 0 0; margin-top: 40px; }
+[data-theme="dark"] #site-footer { background: #081419; }
+.footer-grid { display: grid; grid-template-columns: 1.4fr 1fr 1fr 1fr; gap: 32px; padding-bottom: 40px; }
+.footer-brand .brand-text { color: #fff; }
+.footer-brand p { color: #9fbac6; margin-top: 10px; font-size: 0.9rem; }
+.footer-links h4 { color: #fff; margin-bottom: 14px; font-size: 0.95rem; }
+.footer-links ul { display: flex; flex-direction: column; gap: 10px; }
+.footer-links a { color: #b9d3dd; font-size: 0.9rem; }
+.footer-links a:hover { color: var(--brand-amber); }
+.footer-bottom { border-top: 1px solid rgba(255,255,255,0.12); padding: 18px 0; text-align: center; font-size: 0.82rem; color: #8fa9b4; }
+
+/* ---------- 20. SCROLL TO TOP ---------- */
+.scroll-top { position: fixed; right: 24px; bottom: 24px; z-index: 500; box-shadow: var(--shadow-md); background: var(--brand-navy); color: #fff; }
+.scroll-top:hover { background: var(--brand-amber); color: var(--brand-navy-dark); }
+
+/* ---------- 21. RESPONSIVE ---------- */
+@media (max-width: 960px) {
+  .hero-grid, .mission-grid, .about-grid { grid-template-columns: 1fr; }
+  .hero-visual { order: -1; max-width: 280px; margin: 0 auto; }
+  .sdg-card { grid-template-columns: 1fr; text-align: center; }
+  .sdg-badge { margin: 0 auto; }
+  .footer-grid { grid-template-columns: 1fr 1fr; }
+}
+
+/* Tablets and below: switch to the slide-out menu so the full nav
+   never has to wrap awkwardly inside the header bar. */
+@media (max-width: 900px) {
+  #primary-nav {
+    position: fixed; top: var(--header-height); left: 0; right: 0; bottom: 0;
+    background: var(--surface-1); transform: translateX(100%); transition: transform 0.3s ease;
+    padding: 20px; overflow-y: auto; z-index: 850;
+  }
+  #primary-nav.open { transform: translateX(0); }
+  .nav-links { flex-direction: column; align-items: stretch; gap: 4px; }
+  .nav-link { padding: 16px 14px; border-bottom: 1px solid var(--border-color); border-radius: 0; }
+  .hamburger { display: flex; }
+  .steps-track { grid-template-columns: repeat(2, 1fr); }
+  .footer-grid { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 760px) {
+  .container { padding: 0 18px; }
+  .form-wrap { padding: 28px 20px; }
+  h1 { letter-spacing: -0.01em; }
+  .icon-btn { width: 44px; height: 44px; }
+}
+
+@media (max-width: 480px) {
+  .container { padding: 0 16px; }
+  .hero-actions { flex-direction: column; }
+  .hero-actions .btn { width: 100%; }
+  .cards-grid { grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }
+  .video-grid { grid-template-columns: 1fr; }
+  .steps-track { grid-template-columns: 1fr; }
+  .btn-lg { width: 100%; text-align: center; }
+  .form-wrap { padding: 20px 16px; }
+}
+
+</style>
+
+<!-- Simple book+globe favicon drawn as inline SVG data URI (no external file needed) -->
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='46' fill='%23124559'/%3E%3Cpath d='M50 14a36 36 0 100 72 36 36 0 000-72zm0 6c4 6 6 14 6 30s-2 24-6 30c-4-6-6-14-6-30s2-24 6-30z' fill='%23F2A93B'/%3E%3C/svg%3E">
+</head>
+<body>
+
+<!-- ============ PAGE LOADER ============ -->
+<div id="page-loader" aria-hidden="true">
+  <div class="loader-mark">
+    <span class="loader-ring"></span>
+    <span class="loader-book">📖</span>
+  </div>
+  <p>EduConnect is loading&hellip;</p>
+</div>
+
+<!-- ============ SKIP LINK FOR ACCESSIBILITY ============ -->
+<a href="#main-content" class="skip-link">Skip to main content</a>
+
+<!-- ============ HEADER / NAVIGATION ============ -->
+<header id="site-header">
+  <div class="nav-wrap container">
+    <a href="#home" class="brand" data-nav="home">
+      <span class="brand-mark" aria-hidden="true">
+        <svg viewBox="0 0 40 40" width="34" height="34">
+          <circle cx="20" cy="20" r="18" fill="var(--brand-navy)"></circle>
+          <path d="M20 5c9 8 9 22 0 30-9-8-9-22 0-30z" fill="var(--brand-amber)"></path>
+          <path d="M4 20h32M20 4v32" stroke="var(--brand-navy)" stroke-width="1.4" opacity="0.35"></path>
+        </svg>
+      </span>
+      <span class="brand-text">EduConnect</span>
+    </a>
+
+    <nav id="primary-nav" aria-label="Primary">
+      <ul class="nav-links">
+        <li><a href="#home" data-nav="home" class="nav-link active" data-en="Home" data-hi="होम">Home</a></li>
+        <li><a href="#resources" data-nav="resources" class="nav-link" data-en="Resources" data-hi="संसाधन">Resources</a></li>
+        <li><a href="#scholarships" data-nav="scholarships" class="nav-link" data-en="Scholarships" data-hi="छात्रवृत्ति">Scholarships</a></li>
+        <li><a href="#careers" data-nav="careers" class="nav-link" data-en="Careers" data-hi="करियर">Careers</a></li>
+        <li><a href="#volunteer" data-nav="volunteer" class="nav-link" data-en="Volunteer" data-hi="स्वयंसेवा">Volunteer</a></li>
+        <li><a href="#about" data-nav="about" class="nav-link" data-en="About" data-hi="हमारे बारे में">About</a></li>
+        <li><a href="#contact" data-nav="contact" class="nav-link" data-en="Feedback" data-hi="प्रतिक्रिया">Feedback</a></li>
+      </ul>
+    </nav>
+
+    <div class="nav-actions">
+      <button id="lang-toggle" class="icon-btn lang-btn" type="button" aria-label="हिंदी में देखें (Switch to Hindi)" title="English / हिंदी">
+        <span id="lang-label">EN</span>
+      </button>
+      <button id="theme-toggle" class="icon-btn" type="button" aria-label="Switch to dark mode" title="Toggle dark / light mode">
+        <span id="theme-icon" aria-hidden="true">🌙</span>
+      </button>
+      <button id="menu-toggle" class="icon-btn hamburger" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="primary-nav">
+        <span class="bar"></span><span class="bar"></span><span class="bar"></span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<main id="main-content">
+
+<!-- ======================================================= -->
+<!-- 1. HOME PAGE                                             -->
+<!-- ======================================================= -->
+<section id="home" class="page active-page" data-page="home">
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="container hero-grid">
+      <div class="hero-copy">
+        <p class="eyebrow" data-en="A Student-Led Social Internship Initiative" data-hi="एक छात्र द्वारा संचालित सामाजिक इंटर्नशिप पहल">A Student-Led Social Internship Initiative</p>
+        <h1 data-en-html="Quality Education &lt;span class=&quot;accent&quot;&gt;for Everyone&lt;/span&gt;" data-hi-html="सभी के लिए &lt;span class=&quot;accent&quot;&gt;गुणवत्तापूर्ण शिक्षा&lt;/span&gt;">Quality Education <span class="accent">for Everyone</span></h1>
+        <p class="hero-mission" data-en="EduConnect exists so that a student's postal code or bank balance never decides how far their curiosity can go. We collect honest guidance and real opportunities in one place — built by a student, for students." data-hi="EduConnect इसलिए बनाया गया है ताकि किसी छात्र का पिन कोड या बैंक बैलेंस कभी यह तय न करे कि उसकी जिज्ञासा कितनी दूर तक जा सकती है। हम एक ही जगह पर सही जानकारी और असली अवसर लेकर आते हैं — एक छात्र द्वारा, छात्रों के लिए बनाया गया।">
+          EduConnect exists so that a student's postal code or bank balance never decides how far their curiosity can go.
+          We collect honest guidance and real opportunities in one place &mdash; built by a student, for students.
+        </p>
+        <div class="hero-actions">
+          <a href="#resources" data-nav="resources" class="btn btn-primary" data-en="Explore Resources" data-hi="संसाधन देखें">Explore Resources</a>
+          <a href="#resources" data-nav="resources" class="btn btn-outline" data-en="Start Learning" data-hi="सीखना शुरू करें">Start Learning</a>
+        </div>
+        <div class="hero-trust">
+          <span data-en="🎯 Aligned with UN SDG 4" data-hi="🎯 UN SDG 4 के अनुरूप">🎯 Aligned with UN SDG 4</span>
+          <span data-en="🔓 No login required" data-hi="🔓 लॉगिन की आवश्यकता नहीं">🔓 No login required</span>
+          <span data-en="📶 Works fully offline" data-hi="📶 पूरी तरह ऑफ़लाइन काम करता है">📶 Works fully offline</span>
+        </div>
+      </div>
+
+      <div class="hero-visual" aria-hidden="true">
+        <svg viewBox="0 0 420 420" class="hero-svg">
+          <circle cx="210" cy="210" r="190" fill="var(--surface-2)"></circle>
+          <circle cx="210" cy="210" r="150" fill="none" stroke="var(--brand-amber)" stroke-width="2" stroke-dasharray="6 10"></circle>
+          <!-- open book -->
+          <g transform="translate(90,190)">
+            <path d="M0 20 Q60 -10 120 20 L120 90 Q60 60 0 90 Z" fill="var(--brand-navy)"></path>
+            <path d="M120 20 Q180 -10 240 20 L240 90 Q180 60 120 90 Z" fill="var(--brand-teal)"></path>
+            <line x1="120" y1="20" x2="120" y2="90" stroke="var(--surface-1)" stroke-width="3"></line>
+          </g>
+          <!-- graduation cap -->
+          <g transform="translate(150,70)" class="float-slow">
+            <polygon points="60,0 120,22 60,44 0,22" fill="var(--brand-amber)"></polygon>
+            <rect x="55" y="22" width="10" height="30" fill="var(--brand-navy)"></rect>
+            <circle cx="60" cy="52" r="4" fill="var(--brand-navy)"></circle>
+          </g>
+          <!-- orbiting dots representing global reach -->
+          <circle cx="210" cy="60" r="5" fill="var(--brand-teal)" class="orbit-dot"></circle>
+          <circle cx="360" cy="210" r="5" fill="var(--brand-amber)" class="orbit-dot"></circle>
+          <circle cx="210" cy="360" r="5" fill="var(--brand-navy)" class="orbit-dot"></circle>
+        </svg>
+      </div>
+    </div>
+  </section>
+
+  <!-- MISSION -->
+  <section class="section mission-section">
+    <div class="container mission-grid">
+      <div class="mission-text">
+        <h2 class="section-title" data-en="Our Mission" data-hi="हमारा उद्देश्य">Our Mission</h2>
+        <p>
+          We believe learning should never be locked behind a fee, a login wall or a slow internet connection.
+          EduConnect was built during a college Social Internship to turn that belief into something usable:
+          a single offline-friendly hub of videos, scholarships and honest career advice for school
+          and undergraduate students who are figuring things out on their own.
+        </p>
+      </div>
+      <div class="mission-points">
+        <div class="point"><span class="point-icon">🎥</span><p>Curated free videos, websites and books for core subjects</p></div>
+        <div class="point"><span class="point-icon">🎓</span><p>Scholarship listings so cost never stops ambition</p></div>
+        <div class="point"><span class="point-icon">🧭</span><p>Career guidance for the choices no one explains clearly</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SDG 4 INFO -->
+  <section class="section sdg-section">
+    <div class="container">
+      <div class="sdg-card">
+        <div class="sdg-badge" aria-hidden="true">SDG&nbsp;4</div>
+        <div class="sdg-content">
+          <h2 class="section-title" data-en="Why SDG 4 — Quality Education?" data-hi="SDG 4 — गुणवत्तापूर्ण शिक्षा क्यों?">Why SDG 4 &mdash; Quality Education?</h2>
+          <p>
+            Goal 4 of the United Nations' Sustainable Development Goals calls for inclusive, equitable, quality
+            education and lifelong learning opportunities for all, by 2030. It recognises that education is the
+            single most powerful lever a person has to improve their own life &mdash; and their community's.
+          </p>
+          <ul class="sdg-list">
+            <li>Ensure free, equitable primary and secondary education for all girls and boys</li>
+            <li>Increase access to affordable technical, vocational and higher education</li>
+            <li>Eliminate gender and wealth disparities in access to learning</li>
+            <li>Build a global generation of learners equipped for decent work</li>
+          </ul>
+          <a href="https://sdgs.un.org/goals/goal4" target="_blank" rel="noopener" class="text-link">Read the official UN SDG 4 targets ↗</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- GETTING STARTED -->
+  <section class="section steps-section">
+    <div class="container">
+      <h2 class="section-title center" data-en="How to Get Started" data-hi="शुरुआत कैसे करें">How to Get Started</h2>
+      <div class="steps-track">
+        <div class="step-card">
+          <span class="step-number">1</span>
+          <h3 data-en="Find What You Need" data-hi="जो चाहिए वह खोजें">Find What You Need</h3>
+          <p data-en="Head to Resources for videos, books and websites, Scholarships for funding, or Careers for guidance on what's next." data-hi="वीडियो, किताबें और वेबसाइटों के लिए संसाधन पर जाएँ, फंडिंग के लिए छात्रवृत्ति पर, या आगे क्या करें इसके लिए करियर पर।">Head to Resources for videos, books and websites, Scholarships for funding, or Careers for guidance on what's next.</p>
+        </div>
+        <div class="step-card">
+          <span class="step-number">2</span>
+          <h3 data-en="Browse, No Strings Attached" data-hi="बिना किसी शर्त के देखें">Browse, No Strings Attached</h3>
+          <p data-en="No sign-up, no login, no cost. Everything on the site is free to open and use right away." data-hi="कोई साइन-अप नहीं, कोई लॉगिन नहीं, कोई शुल्क नहीं। साइट पर सब कुछ तुरंत मुफ़्त में उपयोग करने के लिए है।">No sign-up, no login, no cost. Everything on the site is free to open and use right away.</p>
+        </div>
+        <div class="step-card">
+          <span class="step-number">3</span>
+          <h3 data-en="Tell Us What You Think" data-hi="अपनी राय बताएं">Tell Us What You Think</h3>
+          <p data-en="Found something useful, or something broken? Use the Feedback page — it takes less than a minute." data-hi="कुछ उपयोगी मिला, या कुछ टूटा हुआ? प्रतिक्रिया पेज का उपयोग करें — इसमें एक मिनट से भी कम समय लगता है।">Found something useful, or something broken? Use the Feedback page — it takes less than a minute.</p>
+        </div>
+        <div class="step-card">
+          <span class="step-number">4</span>
+          <h3 data-en="Get Involved" data-hi="जुड़ें">Get Involved</h3>
+          <p data-en="Want to help other students the way this site helped you? Sign up on the Volunteer page." data-hi="क्या आप इस साइट की तरह अन्य छात्रों की मदद करना चाहते हैं? स्वयंसेवा पेज पर पंजीकरण करें।">Want to help other students the way this site helped you? Sign up on the Volunteer page.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="section cta-section">
+    <div class="container cta-box">
+      <h2>Ready to take the next step in your learning journey?</h2>
+      <p>Everything on EduConnect is free, always. No sign-up, no paywall &mdash; just start.</p>
+      <a href="#resources" data-nav="resources" class="btn btn-primary btn-lg">Browse Resources</a>
+    </div>
+  </section>
+
+</section>
+
+<!-- ======================================================= -->
+<!-- 3. LEARNING RESOURCES                                    -->
+<!-- ======================================================= -->
+<section id="resources" class="page" data-page="resources">
+  <div class="container page-head">
+    <h1 data-en="Learning Resources" data-hi="अध्ययन संसाधन">Learning Resources</h1>
+    <p data-en="Curated videos, free websites and book recommendations — all handpicked, none paywalled." data-hi="चुने हुए वीडियो, मुफ़्त वेबसाइटें और पुस्तक सुझाव — सभी खुद जाँचे गए, कहीं भी भुगतान नहीं।">Curated videos, free websites and book recommendations &mdash; all handpicked, none paywalled.</p>
+  </div>
+
+  <div class="container">
+    <div class="filter-chips" id="resource-filters" role="group" aria-label="Filter resources">
+      <button class="chip active" data-filter="all" data-en="All" data-hi="सभी">All</button>
+      <button class="chip" data-filter="videos" data-en="Videos" data-hi="वीडियो">Videos</button>
+      <button class="chip" data-filter="websites" data-en="Websites" data-hi="वेबसाइटें">Websites</button>
+      <button class="chip" data-filter="books" data-en="Books" data-hi="पुस्तकें">Books</button>
+    </div>
+  </div>
+
+  <!-- Videos -->
+  <div class="container resource-block" data-block="videos">
+    <h2 class="block-title" data-en="🎥 Educational Videos" data-hi="🎥 शैक्षणिक वीडियो">🎥 Educational Videos</h2>
+    <div class="video-grid">
+      <div class="video-card">
+        <a class="video-frame" href="https://www.youtube.com/watch?v=WUvTyaaNkzM" target="_blank" rel="noopener" aria-label="Watch The Essence of Calculus on YouTube">
+          <img src="https://img.youtube.com/vi/WUvTyaaNkzM/hqdefault.jpg" alt="The Essence of Calculus thumbnail" loading="lazy">
+          <span class="play-overlay" aria-hidden="true">▶</span>
+        </a>
+        <h4>The Essence of Calculus</h4>
+        <p>3Blue1Brown &bull; Mathematics</p>
+      </div>
+      <div class="video-card">
+        <a class="video-frame" href="https://www.youtube.com/watch?v=Pky_mUYXcn4" target="_blank" rel="noopener" aria-label="Watch Newton's Second Law of Motion on YouTube">
+          <img src="https://img.youtube.com/vi/Pky_mUYXcn4/hqdefault.jpg" alt="Newton's Second Law of Motion thumbnail" loading="lazy">
+          <span class="play-overlay" aria-hidden="true">▶</span>
+        </a>
+        <h4>Newton's Second Law of Motion</h4>
+        <p>Khan Academy &bull; Physics</p>
+      </div>
+      <div class="video-card">
+        <a class="video-frame" href="https://www.youtube.com/watch?v=1xSQlwWGT8M" target="_blank" rel="noopener" aria-label="Watch Introduction to the Atom on YouTube">
+          <img src="https://img.youtube.com/vi/1xSQlwWGT8M/hqdefault.jpg" alt="Introduction to the Atom thumbnail" loading="lazy">
+          <span class="play-overlay" aria-hidden="true">▶</span>
+        </a>
+        <h4>Introduction to the Atom</h4>
+        <p>Khan Academy &bull; Chemistry</p>
+      </div>
+      <div class="video-card">
+        <a class="video-frame" href="https://www.youtube.com/watch?v=rfscVS0vtbw" target="_blank" rel="noopener" aria-label="Watch Learn Python — Full Course on YouTube">
+          <img src="https://img.youtube.com/vi/rfscVS0vtbw/hqdefault.jpg" alt="Learn Python — Full Course thumbnail" loading="lazy">
+          <span class="play-overlay" aria-hidden="true">▶</span>
+        </a>
+        <h4>Learn Python &mdash; Full Course</h4>
+        <p>freeCodeCamp &bull; Computer Science</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Websites -->
+  <div class="container resource-block" data-block="websites">
+    <h2 class="block-title" data-en="🌐 Free Learning Websites" data-hi="🌐 मुफ़्त शिक्षण वेबसाइटें">🌐 Free Learning Websites</h2>
+    <div class="cards-grid">
+      <a class="resource-link-card" href="https://www.khanacademy.org" target="_blank" rel="noopener">
+        <h4>Khan Academy</h4><p>Free courses in maths, science and more, for every grade level.</p>
+      </a>
+      <a class="resource-link-card" href="https://www.freecodecamp.org" target="_blank" rel="noopener">
+        <h4>freeCodeCamp</h4><p>Learn programming with free interactive courses and certifications.</p>
+      </a>
+      <a class="resource-link-card" href="https://ocw.mit.edu" target="_blank" rel="noopener">
+        <h4>MIT OpenCourseWare</h4><p>Free lecture notes, exams and videos from MIT courses.</p>
+      </a>
+      <a class="resource-link-card" href="https://swayam.gov.in" target="_blank" rel="noopener">
+        <h4>SWAYAM</h4><p>Government of India's free online courses from school to postgraduate level.</p>
+      </a>
+      <a class="resource-link-card" href="https://www.duolingo.com" target="_blank" rel="noopener">
+        <h4>Duolingo</h4><p>Free, gamified language learning for over 30 languages.</p>
+      </a>
+      <a class="resource-link-card" href="https://www.coursera.org" target="_blank" rel="noopener">
+        <h4>Coursera (Audit Mode)</h4><p>Audit university-grade courses for free without a certificate.</p>
+      </a>
+    </div>
+  </div>
+
+  <!-- Books -->
+  <div class="container resource-block" data-block="books">
+    <h2 class="block-title" data-en="📚 Recommended Books" data-hi="📚 अनुशंसित पुस्तकें">📚 Recommended Books</h2>
+    <div class="cards-grid">
+      <a class="book-card" href="https://ncert.nic.in/textbook.php" target="_blank" rel="noopener">
+        <div class="book-spine">📗</div>
+        <h4>NCERT Textbooks (Class 6&ndash;12)</h4>
+        <p>The foundation for every Indian school subject &mdash; free to download from the official NCERT site.</p>
+        <span class="book-link-label">Open ncert.nic.in ↗</span>
+      </a>
+      <a class="book-card" href="https://automatetheboringstuff.com" target="_blank" rel="noopener">
+        <div class="book-spine">📘</div>
+        <h4>Automate the Boring Stuff with Python</h4>
+        <p>By Al Sweigart &mdash; a free, beginner-friendly programming book, readable online.</p>
+        <span class="book-link-label">Read free online ↗</span>
+      </a>
+      <a class="book-card" href="https://www.amazon.in/s?k=Concepts+of+Physics+H.C.+Verma" target="_blank" rel="noopener">
+        <div class="book-spine">📙</div>
+        <h4>Concepts of Physics</h4>
+        <p>By H.C. Verma &mdash; a classic for building strong physics fundamentals.</p>
+        <span class="book-link-label">Find this book ↗</span>
+      </a>
+      <a class="book-card" href="https://www.amazon.in/s?k=Wren+and+Martin+High+School+English+Grammar" target="_blank" rel="noopener">
+        <div class="book-spine">📕</div>
+        <h4>Wren &amp; Martin</h4>
+        <p>High School English Grammar &amp; Composition &mdash; the standard grammar reference.</p>
+        <span class="book-link-label">Find this book ↗</span>
+      </a>
+    </div>
+  </div>
+
+  <!-- Suggested Learning Paths -->
+  <div class="container learning-paths">
+    <h2 class="block-title" data-en="🗺️ Suggested Learning Paths" data-hi="🗺️ सुझाए गए अध्ययन मार्ग">🗺️ Suggested Learning Paths</h2>
+    <p class="block-intro" data-en="Not sure where to start? Here's a simple order to follow for each subject." data-hi="समझ नहीं आ रहा कहाँ से शुरू करें? हर विषय के लिए यह सरल क्रम अपनाएँ।">Not sure where to start? Here's a simple order to follow for each subject.</p>
+    <div class="cards-grid">
+      <div class="path-card">
+        <h4>📐 Mathematics</h4>
+        <ol>
+          <li>Start with the NCERT chapter for your class to build the basics.</li>
+          <li>Watch <a href="https://www.youtube.com/watch?v=WUvTyaaNkzM" target="_blank" rel="noopener">3Blue1Brown's Essence of Calculus</a> for visual intuition.</li>
+          <li>Solve the NCERT exercise problems before moving to the next chapter.</li>
+        </ol>
+      </div>
+      <div class="path-card">
+        <h4>🔭 Physics</h4>
+        <ol>
+          <li>Read the NCERT chapter first for definitions and formulas.</li>
+          <li>Watch <a href="https://www.youtube.com/watch?v=Pky_mUYXcn4" target="_blank" rel="noopener">Khan Academy's video</a> on the same topic for a step-by-step walkthrough.</li>
+          <li>Solve the numerical problems at the end of the chapter yourself.</li>
+        </ol>
+      </div>
+      <div class="path-card">
+        <h4>🧪 Chemistry</h4>
+        <ol>
+          <li>Start with the NCERT chapter for core definitions.</li>
+          <li>Watch <a href="https://www.youtube.com/watch?v=1xSQlwWGT8M" target="_blank" rel="noopener">Khan Academy's video</a> for a visual walkthrough of tricky concepts.</li>
+          <li>Revise using short notes you write yourself, not just re-reading.</li>
+        </ol>
+      </div>
+      <div class="path-card">
+        <h4>💻 Computer Science</h4>
+        <ol>
+          <li>Watch <a href="https://www.youtube.com/watch?v=rfscVS0vtbw" target="_blank" rel="noopener">freeCodeCamp's Python course</a> from the start, coding along as you go.</li>
+          <li>Write a few small programs yourself after each section instead of only watching.</li>
+          <li>Use a reference book for theory questions once you're comfortable with the basics.</li>
+        </ol>
+      </div>
+    </div>
+  </div>
+
+  <!-- How to Study -->
+  <div class="container how-to-study">
+    <h2 class="block-title" data-en="🧠 How to Study, Not Just What to Study" data-hi="🧠 क्या पढ़ें ही नहीं, कैसे पढ़ें">🧠 How to Study, Not Just What to Study</h2>
+    <p class="block-intro" data-en="A few simple, well-tested techniques that make study time actually count." data-hi="कुछ सरल, आज़माए हुए तरीके जो पढ़ाई के समय को वाकई सार्थक बनाते हैं।">A few simple, well-tested techniques that make study time actually count.</p>
+    <div class="cards-grid">
+      <div class="study-tip-card">
+        <h4>🔁 Active Recall</h4>
+        <p>Close the book and try to write or say what you just learned, instead of just re-reading it. Struggling to recall is what actually builds memory.</p>
+      </div>
+      <div class="study-tip-card">
+        <h4>📅 Spaced Repetition</h4>
+        <p>Review a topic a day later, then a week later, then a month later — instead of cramming once. Spreading it out is what makes it stick long-term.</p>
+      </div>
+      <div class="study-tip-card">
+        <h4>⏱️ The Pomodoro Technique</h4>
+        <p>Study in focused 25-minute blocks with a 5-minute break in between. Short, distraction-free sprints beat long, unfocused hours.</p>
+      </div>
+      <div class="study-tip-card">
+        <h4>🗣️ Explain It Simply</h4>
+        <p>Try explaining the topic in plain words, like you're teaching a younger student. If you get stuck, that's exactly the part you don't understand yet.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ======================================================= -->
+<!-- 5. SCHOLARSHIPS                                          -->
+<!-- ======================================================= -->
+<section id="scholarships" class="page" data-page="scholarships">
+  <div class="container page-head">
+    <h1 data-en="Scholarships" data-hi="छात्रवृत्तियाँ">Scholarships</h1>
+    <p>A shortlist of scholarships worth checking &mdash; verify current details on each official website before applying.</p>
+  </div>
+
+  <div class="container cards-grid">
+    <article class="scholarship-card">
+      <h3>National Means-cum-Merit Scholarship</h3>
+      <p class="scholarship-row"><strong>Eligibility:</strong> Class 9&ndash;12 students from economically weaker sections with 55%+ marks.</p>
+      <p class="scholarship-row"><strong>Benefits:</strong> &#8377;12,000 per year until Class 12.</p>
+      <p class="scholarship-row"><strong>Last Date:</strong> Varies by state &mdash; check official portal.</p>
+      <a class="btn btn-small" href="https://scholarships.gov.in" target="_blank" rel="noopener">Apply / Learn More</a>
+    </article>
+
+    <article class="scholarship-card">
+      <h3>INSPIRE Scholarship (DST)</h3>
+      <p class="scholarship-row"><strong>Eligibility:</strong> Top 1% in Class 12 boards, pursuing B.Sc/Integrated M.Sc.</p>
+      <p class="scholarship-row"><strong>Benefits:</strong> &#8377;80,000 per year for 5 years.</p>
+      <p class="scholarship-row"><strong>Last Date:</strong> Usually October&ndash;November each year.</p>
+      <a class="btn btn-small" href="https://online-inspire.gov.in" target="_blank" rel="noopener">Apply / Learn More</a>
+    </article>
+
+    <article class="scholarship-card">
+      <h3>Post-Matric Scholarship for SC/ST/OBC</h3>
+      <p class="scholarship-row"><strong>Eligibility:</strong> Students from SC/ST/OBC categories in post-matric courses.</p>
+      <p class="scholarship-row"><strong>Benefits:</strong> Full tuition fee reimbursement + maintenance allowance.</p>
+      <p class="scholarship-row"><strong>Last Date:</strong> Typically December, state-dependent.</p>
+      <a class="btn btn-small" href="https://scholarships.gov.in" target="_blank" rel="noopener">Apply / Learn More</a>
+    </article>
+
+    <article class="scholarship-card">
+      <h3>Kishore Vaigyanik Protsahan Yojana (KVPY-successor)</h3>
+      <p class="scholarship-row"><strong>Eligibility:</strong> Class 11/12 &amp; UG students inclined towards research in Science.</p>
+      <p class="scholarship-row"><strong>Benefits:</strong> Monthly fellowship + annual contingency grant.</p>
+      <p class="scholarship-row"><strong>Last Date:</strong> Announced yearly on the DST portal.</p>
+      <a class="btn btn-small" href="https://dst.gov.in" target="_blank" rel="noopener">Apply / Learn More</a>
+    </article>
+
+    <article class="scholarship-card">
+      <h3>Girl Child Education Scholarship</h3>
+      <p class="scholarship-row"><strong>Eligibility:</strong> Girl students in government schools, Class 6&ndash;12.</p>
+      <p class="scholarship-row"><strong>Benefits:</strong> &#8377;3,000&ndash;&#8377;5,000 per year &amp; bicycle assistance in select states.</p>
+      <p class="scholarship-row"><strong>Last Date:</strong> Varies by state education department.</p>
+      <a class="btn btn-small" href="https://scholarships.gov.in" target="_blank" rel="noopener">Apply / Learn More</a>
+    </article>
+
+    <article class="scholarship-card">
+      <h3>Private CSR Merit Scholarships</h3>
+      <p class="scholarship-row"><strong>Eligibility:</strong> Varies &mdash; typically merit + income based, offered by corporate foundations.</p>
+      <p class="scholarship-row"><strong>Benefits:</strong> Ranges from &#8377;10,000 to full course fee.</p>
+      <p class="scholarship-row"><strong>Last Date:</strong> Rolling &mdash; check individual foundation sites.</p>
+      <a class="btn btn-small" href="#" data-placeholder="true">Apply / Learn More</a>
+    </article>
+  </div>
+</section>
+
+<!-- ======================================================= -->
+<!-- 6. CAREER GUIDANCE                                       -->
+<!-- ======================================================= -->
+<section id="careers" class="page" data-page="careers">
+  <div class="container page-head">
+    <h1 data-en="Career Guidance" data-hi="करियर मार्गदर्शन">Career Guidance</h1>
+    <p>Honest, practical starting points for six common career directions after school.</p>
+  </div>
+
+  <div class="container cards-grid">
+    <article class="career-card">
+      <h3>⚙️ Engineering</h3>
+      <p><strong>Eligibility:</strong> Class 12 with Physics, Chemistry, Maths (PCM); JEE / state CET.</p>
+      <p><strong>Skills Needed:</strong> Problem-solving, mathematics, logical reasoning, curiosity for how things work.</p>
+      <p><strong>Opportunities:</strong> Core engineering, software development, research, entrepreneurship, higher studies abroad.</p>
+    </article>
+
+    <article class="career-card">
+      <h3>🩺 Medical</h3>
+      <p><strong>Eligibility:</strong> Class 12 with Physics, Chemistry, Biology (PCB); NEET qualification.</p>
+      <p><strong>Skills Needed:</strong> Patience, empathy, memory retention, resilience under pressure.</p>
+      <p><strong>Opportunities:</strong> MBBS, BDS, nursing, allied health sciences, research, public health.</p>
+    </article>
+
+    <article class="career-card">
+      <h3>💹 Commerce</h3>
+      <p><strong>Eligibility:</strong> Class 12 in any stream (Commerce preferred) for B.Com/BBA/CA/CS.</p>
+      <p><strong>Skills Needed:</strong> Numerical aptitude, attention to detail, ethics, communication.</p>
+      <p><strong>Opportunities:</strong> Chartered Accountancy, banking, finance, entrepreneurship, company secretary roles.</p>
+    </article>
+
+    <article class="career-card">
+      <h3>🎨 Arts &amp; Humanities</h3>
+      <p><strong>Eligibility:</strong> Class 12 in any stream for BA in literature, history, psychology, design, etc.</p>
+      <p><strong>Skills Needed:</strong> Communication, creativity, critical thinking, cultural awareness.</p>
+      <p><strong>Opportunities:</strong> Civil services, journalism, design, law, teaching, social work, content creation.</p>
+    </article>
+
+    <article class="career-card">
+      <h3>🏛️ Government Jobs</h3>
+      <p><strong>Eligibility:</strong> Varies by exam &mdash; UPSC, SSC, state PSC, banking exams, defence services.</p>
+      <p><strong>Skills Needed:</strong> Discipline, current affairs awareness, time management, consistency in preparation.</p>
+      <p><strong>Opportunities:</strong> Civil services, public sector banks, defence forces, railways, teaching posts.</p>
+    </article>
+
+    <article class="career-card">
+      <h3>🛠️ Skill Development</h3>
+      <p><strong>Eligibility:</strong> Open to all &mdash; school dropouts to graduates, via ITI, polytechnic or short-term courses.</p>
+      <p><strong>Skills Needed:</strong> Hands-on aptitude, willingness to learn a trade, discipline.</p>
+      <p><strong>Opportunities:</strong> Electrician, plumbing, tailoring, digital marketing, freelancing, self-employment.</p>
+    </article>
+  </div>
+</section>
+
+<!-- ======================================================= -->
+<!-- 7. VOLUNTEER                                             -->
+<!-- ======================================================= -->
+<section id="volunteer" class="page" data-page="volunteer">
+  <div class="container page-head">
+    <h1 data-en="Volunteer With Us" data-hi="हमारे साथ स्वयंसेवा करें">Volunteer With Us</h1>
+    <p>Have an hour a week to spare? Help us reach more students. Fill the form below to register.</p>
+  </div>
+
+  <div class="container form-wrap">
+    <form id="volunteer-form" action="https://formspree.io/f/xqerbbwa" method="POST">
+      <input type="hidden" name="_subject" value="New Volunteer Registration — EduConnect">
+      <div class="form-row">
+        <label for="v-name" data-en-html="Full Name &lt;span class=&quot;req&quot;&gt;*&lt;/span&gt;" data-hi-html="पूरा नाम &lt;span class=&quot;req&quot;&gt;*&lt;/span&gt;">Full Name <span class="req">*</span></label>
+        <input type="text" id="v-name" name="name" placeholder="e.g. Priya Sharma" autocomplete="name" required>
+        <span class="error-msg" id="err-v-name"></span>
+      </div>
+
+      <div class="form-row">
+        <label for="v-email" data-en-html="Email Address &lt;span class=&quot;req&quot;&gt;*&lt;/span&gt;" data-hi-html="ईमेल पता &lt;span class=&quot;req&quot;&gt;*&lt;/span&gt;">Email Address <span class="req">*</span></label>
+        <input type="email" id="v-email" name="email" placeholder="e.g. priya@example.com" autocomplete="email" required>
+        <span class="error-msg" id="err-v-email"></span>
+      </div>
+
+      <div class="form-row">
+        <label for="v-phone" data-en-html="Phone Number &lt;span class=&quot;req&quot;&gt;*&lt;/span&gt;" data-hi-html="फ़ोन नंबर &lt;span class=&quot;req&quot;&gt;*&lt;/span&gt;">Phone Number <span class="req">*</span></label>
+        <input type="tel" id="v-phone" name="phone" placeholder="10-digit mobile number" autocomplete="tel" pattern="[0-9]{10}" required>
+        <span class="error-msg" id="err-v-phone"></span>
+      </div>
+
+      <div class="form-row">
+        <label for="v-skills" data-en="Skills" data-hi="कौशल">Skills</label>
+        <input type="text" id="v-skills" name="skills" placeholder="e.g. Teaching, Design, Content Writing">
+        <span class="error-msg" id="err-v-skills"></span>
+      </div>
+
+      <div class="form-row">
+        <label for="v-message" data-en="Message" data-hi="संदेश">Message</label>
+        <textarea id="v-message" name="message" rows="4" placeholder="Tell us why you'd like to volunteer&hellip;"></textarea>
+        <span class="error-msg" id="err-v-message"></span>
+      </div>
+
+      <button type="submit" class="btn btn-primary btn-lg" data-en="Register as Volunteer" data-hi="स्वयंसेवक के रूप में पंजीकरण करें">Register as Volunteer</button>
+      <p id="volunteer-success" class="success-msg" role="status" hidden>✅ Thank you! Your volunteer registration has been received.</p>
+    </form>
+  </div>
+</section>
+
+<!-- ======================================================= -->
+<!-- 8. ABOUT                                                 -->
+<!-- ======================================================= -->
+<section id="about" class="page" data-page="about">
+  <div class="container page-head">
+    <h1 data-en="About EduConnect" data-hi="EduConnect के बारे में">About EduConnect</h1>
+    <p>The story, mission and objectives behind this initiative.</p>
+  </div>
+
+  <div class="container about-grid">
+    <div class="about-block">
+      <h2>What is EduConnect?</h2>
+      <p>
+        EduConnect is a non-commercial, student-built educational platform created as part of a college Social
+        Internship programme. It brings together curated learning resources, video lessons,
+        scholarship listings and career guidance in one lightweight, offline-friendly website &mdash; free for
+        anyone to use, with nothing to sign up for.
+      </p>
+
+      <h2>Our Mission</h2>
+      <p>
+        To reduce the distance between a student and the resources they need &mdash; regardless of their school,
+        location or income &mdash; by making trustworthy educational material easy to find and free to use.
+      </p>
+
+      <h2>Our Vision</h2>
+      <p>
+        A future where every learner, in every classroom or without one, has an equal starting point:
+        access to quality educational material as a right, not a privilege.
+      </p>
+
+      <h2>Our Objectives</h2>
+      <ul class="about-list">
+        <li>Curate reliable external learning resources instead of recreating what already works well</li>
+        <li>Simplify access to scholarships that students often don't hear about in time</li>
+        <li>Demystify career paths with plain, judgement-free guidance</li>
+        <li>Build a small, local volunteer network to keep the initiative growing</li>
+      </ul>
+
+      <h2>Contribution to SDG 4</h2>
+      <p>
+        Every part of this website maps directly to a target under UN Sustainable Development Goal 4:
+        removing cost barriers (free resources), improving access (offline-first design, no login),
+        and building relevant skills for further study and work (video lessons and career guidance). It is a small,
+        local attempt at a global goal.
+      </p>
+    </div>
+
+    <aside class="about-side">
+      <div class="about-card">
+        <h3>Project Type</h3>
+        <p>College Social Internship Project</p>
+      </div>
+      <div class="about-card">
+        <h3>Focus Area</h3>
+        <p>UN SDG 4 &mdash; Quality Education</p>
+      </div>
+      <div class="about-card">
+        <h3>Built With</h3>
+        <p>HTML, CSS &amp; JavaScript &mdash; no frameworks, no backend, works offline</p>
+      </div>
+      <div class="about-card">
+        <h3>Access Policy</h3>
+        <p>100% free. No login or sign-up, ever.</p>
+      </div>
+    </aside>
+  </div>
+
+  <!-- FAQ -->
+  <div class="container faq-section">
+    <h2 class="section-title center" data-en="Frequently Asked Questions" data-hi="अक्सर पूछे जाने वाले प्रश्न">Frequently Asked Questions</h2>
+    <div class="faq-list">
+      <div class="faq-item">
+        <button class="faq-question" aria-expanded="false">Do I need to create an account to use EduConnect? <span class="faq-toggle">+</span></button>
+        <div class="faq-answer"><p>No. Every page and download is open to use immediately &mdash; no login or sign-up, ever.</p></div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-question" aria-expanded="false">Does this website cost anything to use? <span class="faq-toggle">+</span></button>
+        <div class="faq-answer"><p>Nothing. EduConnect is a non-commercial student project; there are no fees, ads for purchase, or hidden charges.</p></div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-question" aria-expanded="false">Will the site work without internet access? <span class="faq-toggle">+</span></button>
+        <div class="faq-answer"><p>Yes, once the page is loaded, everything works offline except the video lessons, which open on YouTube and need an internet connection to watch.</p></div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-question" aria-expanded="false">Can I contribute or volunteer? <span class="faq-toggle">+</span></button>
+        <div class="faq-answer"><p>Absolutely &mdash; visit the Volunteer page and fill in the registration form. We welcome help with content, design and outreach.</p></div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-question" aria-expanded="false">Are the scholarship details guaranteed accurate? <span class="faq-toggle">+</span></button>
+        <div class="faq-answer"><p>We try to keep listings current, but deadlines and rules change. Always confirm details on the official scholarship portal before applying.</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ======================================================= -->
+<!-- 9. FEEDBACK                                              -->
+<!-- ======================================================= -->
+<section id="contact" class="page" data-page="contact">
+  <div class="container page-head">
+    <h1 data-en="Feedback" data-hi="प्रतिक्रिया">Feedback</h1>
+    <p>Used EduConnect? Tell us what worked, what didn't, or what we should add next.</p>
+  </div>
+
+  <div class="container contact-grid">
+    <form id="contact-form" class="form-wrap" action="https://formspree.io/f/xqerbbwa" method="POST">
+      <input type="hidden" name="_subject" value="New Feedback — EduConnect">
+      <div class="form-row">
+        <label for="c-name" data-en-html="Full Name &lt;span class=&quot;req&quot;&gt;*&lt;/span&gt;" data-hi-html="पूरा नाम &lt;span class=&quot;req&quot;&gt;*&lt;/span&gt;">Full Name <span class="req">*</span></label>
+        <input type="text" id="c-name" name="name" placeholder="Your name" autocomplete="name" required>
+        <span class="error-msg" id="err-c-name"></span>
+      </div>
+      <div class="form-row">
+        <label for="c-email" data-en-html="Email Address &lt;span class=&quot;req&quot;&gt;*&lt;/span&gt;" data-hi-html="ईमेल पता &lt;span class=&quot;req&quot;&gt;*&lt;/span&gt;">Email Address <span class="req">*</span></label>
+        <input type="email" id="c-email" name="email" placeholder="you@example.com" autocomplete="email" required>
+        <span class="error-msg" id="err-c-email"></span>
+      </div>
+      <div class="form-row">
+        <label for="c-subject" data-en="Feedback Type" data-hi="प्रतिक्रिया का प्रकार">Feedback Type</label>
+        <select id="c-subject" name="subject">
+          <option value="General Feedback" selected>General Feedback</option>
+          <option value="Suggestion">Suggestion</option>
+          <option value="Bug Report">Bug Report</option>
+          <option value="Compliment">Compliment</option>
+        </select>
+      </div>
+      <div class="form-row">
+        <label for="c-message" data-en-html="Your Feedback &lt;span class=&quot;req&quot;&gt;*&lt;/span&gt;" data-hi-html="आपकी प्रतिक्रिया &lt;span class=&quot;req&quot;&gt;*&lt;/span&gt;">Your Feedback <span class="req">*</span></label>
+        <textarea id="c-message" name="message" rows="5" placeholder="Tell us what worked, what didn't, or what to add next&hellip;" required></textarea>
+        <span class="error-msg" id="err-c-message"></span>
+      </div>
+      <button type="submit" class="btn btn-primary btn-lg" data-en="Send Feedback" data-hi="प्रतिक्रिया भेजें">Send Feedback</button>
+      <p id="contact-success" class="success-msg" role="status" hidden>✅ Thanks for your feedback!</p>
+    </form>
+
+  </div>
+</section>
+
+</main>
+
+<!-- ============ FOOTER ============ -->
+<footer id="site-footer">
+  <div class="container footer-grid">
+    <div class="footer-brand">
+      <span class="brand-text">EduConnect</span>
+      <p>A student-led social initiative for UN SDG 4: Quality Education. Free, forever, for everyone.</p>
+    </div>
+
+    <div class="footer-links">
+      <h4>Explore</h4>
+      <ul>
+        <li><a href="#resources" data-nav="resources">Learning Resources</a></li>
+        <li><a href="#scholarships" data-nav="scholarships">Scholarships</a></li>
+      </ul>
+    </div>
+
+    <div class="footer-links">
+      <h4>Get Involved</h4>
+      <ul>
+        <li><a href="#careers" data-nav="careers">Career Guidance</a></li>
+        <li><a href="#volunteer" data-nav="volunteer">Volunteer</a></li>
+        <li><a href="#about" data-nav="about">About Us</a></li>
+        <li><a href="#contact" data-nav="contact">Feedback</a></li>
+      </ul>
+    </div>
+
+    <div class="footer-links">
+      <h4>Goal</h4>
+      <ul>
+        <li><a href="https://sdgs.un.org/goals/goal4" target="_blank" rel="noopener">UN SDG 4 ↗</a></li>
+        <li><a href="https://scholarships.gov.in" target="_blank" rel="noopener">National Scholarship Portal ↗</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="container footer-bottom">
+    <p>&copy; <span id="footer-year"></span> EduConnect. Made with 💙 for a Social Internship project.</p>
+  </div>
+</footer>
+
+<!-- ============ SCROLL TO TOP ============ -->
+<button id="scroll-top" class="icon-btn scroll-top" type="button" aria-label="Scroll back to top" hidden>⬆</button>
+
+<script>
+/* =========================================================
+   EDUCONNECT — script.js
+   Beginner-friendly, well-commented JavaScript.
+   Handles: page navigation, mobile menu, resource filter,
+   form validation, FAQ accordion, and scroll-to-top.
+
+   NOTE: each numbered section below is wrapped in its own
+   try/catch. This means if one section ever hits an
+   unexpected error, it's logged to the console but every
+   other section still runs normally — a bug in one feature
+   (e.g. the resource filter) can no longer silently disable
+   an unrelated one (e.g. form validation).
+   ========================================================= */
+
+/* Run everything only after the HTML has fully loaded */
+document.addEventListener("DOMContentLoaded", function () {
+
+  /* =========================================================
+     0. PAGE LOADER
+     Shows a short loading animation, then reveals the site.
+     ========================================================= */
+  try {
+    const pageLoader = document.getElementById("page-loader");
+    if (pageLoader) {
+      window.addEventListener("load", function () {
+        setTimeout(function () {
+          pageLoader.classList.add("loaded");
+        }, 500); // small delay so the animation is visible even on fast connections
+      });
+    }
+  } catch (err) {
+    console.error("EduConnect: page loader failed to initialise.", err);
+  }
+
+  /* =========================================================
+     1. SINGLE PAGE NAVIGATION
+     The whole site lives in one HTML file. Each <section class="page">
+     is shown/hidden based on the URL hash (e.g. #resources, #scholarships).
+     ========================================================= */
+  let closeMobileMenu = function () {}; // filled in properly by section 2 below
+
+  try {
+    const pages = document.querySelectorAll(".page");
+    const navLinks = document.querySelectorAll("[data-nav]");
+
+    function showPage(pageId) {
+      // Fall back to "home" if an unknown/empty hash is given
+      const validIds = Array.from(pages).map((p) => p.dataset.page);
+      if (!validIds.includes(pageId)) {
+        pageId = "home";
+      }
+
+      // Toggle visibility of each page section
+      pages.forEach(function (page) {
+        page.classList.toggle("active-page", page.dataset.page === pageId);
+      });
+
+      // Highlight the matching nav link(s) — header + footer both use data-nav
+      navLinks.forEach(function (link) {
+        link.classList.toggle("active", link.dataset.nav === pageId);
+      });
+
+      // Scroll to the top of the new page smoothly
+      window.scrollTo({ top: 0, behavior: "smooth" });
+
+      // Close the mobile menu after navigating
+      closeMobileMenu();
+    }
+
+    // Clicking any nav link updates the hash; the hashchange listener does the rest
+    navLinks.forEach(function (link) {
+      link.addEventListener("click", function (e) {
+        e.preventDefault();
+        const target = link.dataset.nav;
+        window.location.hash = target;
+      });
+    });
+
+    window.addEventListener("hashchange", function () {
+      const pageId = window.location.hash.replace("#", "");
+      showPage(pageId);
+    });
+
+    // On first load, show whatever page matches the current hash (or Home)
+    const initialPage = window.location.hash.replace("#", "") || "home";
+    showPage(initialPage);
+  } catch (err) {
+    console.error("EduConnect: page navigation failed to initialise.", err);
+  }
+
+
+  /* =========================================================
+     2. MOBILE MENU
+     ========================================================= */
+  try {
+    const menuToggleBtn = document.getElementById("menu-toggle");
+    const primaryNav = document.getElementById("primary-nav");
+
+    if (menuToggleBtn && primaryNav) {
+      closeMobileMenu = function () {
+        primaryNav.classList.remove("open");
+        menuToggleBtn.setAttribute("aria-expanded", "false");
+      };
+
+      menuToggleBtn.addEventListener("click", function () {
+        const isOpen = primaryNav.classList.toggle("open");
+        menuToggleBtn.setAttribute("aria-expanded", isOpen ? "true" : "false");
+      });
+    }
+  } catch (err) {
+    console.error("EduConnect: mobile menu failed to initialise.", err);
+  }
+
+
+  /* =========================================================
+     3. DARK / LIGHT MODE TOGGLE
+     Preference is remembered using localStorage so it persists
+     between visits. Storage access is wrapped in try/catch:
+     some sandboxed preview environments block localStorage
+     entirely, and without this guard a single thrown error
+     here could otherwise affect the rest of the page.
+     ========================================================= */
+  try {
+    const themeToggleBtn = document.getElementById("theme-toggle");
+    const themeIcon = document.getElementById("theme-icon");
+    const htmlEl = document.documentElement;
+
+    function safeGetItem(key) {
+      try {
+        return localStorage.getItem(key);
+      } catch (e) {
+        return null;
+      }
+    }
+
+    function safeSetItem(key, value) {
+      try {
+        localStorage.setItem(key, value);
+      } catch (e) {
+        // Storage unavailable (private browsing, sandboxed preview, etc.) — ignore.
+      }
+    }
+
+    function applyTheme(theme) {
+      if (theme === "dark") {
+        htmlEl.setAttribute("data-theme", "dark");
+        if (themeIcon) themeIcon.textContent = "☀️";
+        if (themeToggleBtn) themeToggleBtn.setAttribute("aria-label", "Switch to light mode");
+      } else {
+        htmlEl.removeAttribute("data-theme");
+        if (themeIcon) themeIcon.textContent = "🌙";
+        if (themeToggleBtn) themeToggleBtn.setAttribute("aria-label", "Switch to dark mode");
+      }
+    }
+
+    if (themeToggleBtn) {
+      // Load saved preference, or default to light mode
+      const savedTheme = safeGetItem("educonnect-theme") || "light";
+      applyTheme(savedTheme);
+
+      themeToggleBtn.addEventListener("click", function () {
+        const isDark = htmlEl.getAttribute("data-theme") === "dark";
+        const newTheme = isDark ? "light" : "dark";
+        applyTheme(newTheme);
+        safeSetItem("educonnect-theme", newTheme);
+      });
+    }
+  } catch (err) {
+    console.error("EduConnect: theme toggle failed to initialise.", err);
+  }
+
+
+  /* =========================================================
+     4. ENGLISH / HINDI LANGUAGE TOGGLE
+     Elements carrying data-en/data-hi (plain text) or
+     data-en-html/data-hi-html (text with inline markup, e.g.
+     a required-field asterisk) get swapped on toggle. Only the
+     site's navigation, headings, and form labels are translated
+     in this version — long body paragraphs stay in English for now.
+     ========================================================= */
+  try {
+    const langToggleBtn = document.getElementById("lang-toggle");
+    const langLabel = document.getElementById("lang-label");
+
+    function safeGetLangItem(key) {
+      try {
+        return localStorage.getItem(key);
+      } catch (e) {
+        return null;
+      }
+    }
+
+    function safeSetLangItem(key, value) {
+      try {
+        localStorage.setItem(key, value);
+      } catch (e) {
+        // Storage unavailable — ignore, toggle still works for this visit.
+      }
+    }
+
+    function applyLanguage(lang) {
+      const isHindi = lang === "hi";
+
+      document.querySelectorAll("[data-en]").forEach(function (el) {
+        el.textContent = isHindi ? el.dataset.hi : el.dataset.en;
+      });
+      document.querySelectorAll("[data-en-html]").forEach(function (el) {
+        el.innerHTML = isHindi ? el.dataset.hiHtml : el.dataset.enHtml;
+      });
+
+      document.documentElement.lang = isHindi ? "hi" : "en";
+      if (langLabel) langLabel.textContent = isHindi ? "हिं" : "EN";
+      if (langToggleBtn) {
+        langToggleBtn.setAttribute(
+          "aria-label",
+          isHindi ? "Switch to English" : "हिंदी में देखें (Switch to Hindi)"
+        );
+      }
+    }
+
+    if (langToggleBtn) {
+      const savedLang = safeGetLangItem("educonnect-lang") || "en";
+      applyLanguage(savedLang);
+
+      langToggleBtn.addEventListener("click", function () {
+        const isCurrentlyHindi = document.documentElement.lang === "hi";
+        const newLang = isCurrentlyHindi ? "en" : "hi";
+        applyLanguage(newLang);
+        safeSetLangItem("educonnect-lang", newLang);
+      });
+    }
+  } catch (err) {
+    console.error("EduConnect: language toggle failed to initialise.", err);
+  }
+
+
+  /* =========================================================
+     5. LEARNING RESOURCES — CATEGORY FILTER
+     ========================================================= */
+  try {
+    const resourceFilterChips = document.querySelectorAll("#resource-filters .chip");
+    const resourceBlocks = document.querySelectorAll(".resource-block");
+
+    resourceFilterChips.forEach(function (chip) {
+      chip.addEventListener("click", function () {
+        resourceFilterChips.forEach((c) => c.classList.remove("active"));
+        chip.classList.add("active");
+        const filter = chip.dataset.filter;
+
+        resourceBlocks.forEach(function (block) {
+          block.style.display = filter === "all" || block.dataset.block === filter ? "" : "none";
+        });
+      });
+    });
+  } catch (err) {
+    console.error("EduConnect: resource filter failed to initialise.", err);
+  }
+
+
+  /* =========================================================
+     6. FORM VALIDATION — VOLUNTEER & CONTACT
+     Once a form passes validation, its data is sent to
+     Formspree (a free form-to-email service — no backend code
+     needed) so a real email lands in the connected inbox.
+     Each <form> in index.html carries its own Formspree
+     action URL (action="https://formspree.io/f/...").
+     ========================================================= */
+  try {
+    function showError(inputEl, errorEl, message) {
+      inputEl.classList.add("invalid");
+      if (errorEl) errorEl.textContent = message;
+    }
+
+    function clearError(inputEl, errorEl) {
+      inputEl.classList.remove("invalid");
+      if (errorEl) errorEl.textContent = "";
+    }
+
+    function isValidEmail(value) {
+      return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+    }
+
+    function isValidPhone(value) {
+      return /^[0-9]{10}$/.test(value.replace(/\s|-/g, ""));
+    }
+
+    /**
+     * Sends a form's data to Formspree so a real email is delivered.
+     * Shows the success message on success, or a friendly error
+     * message (reusing the same success-message element) if the
+     * request fails — e.g. no internet connection.
+     */
+    function submitFormByEmail(form, successEl, submitBtn) {
+      const originalBtnText = submitBtn.textContent;
+      submitBtn.disabled = true;
+      submitBtn.textContent = "Sending…";
+
+      fetch(form.action, {
+        method: "POST",
+        headers: { Accept: "application/json" },
+        body: new FormData(form)
+      })
+        .then((response) => response.json().then((data) => ({ ok: response.ok, data })))
+        .then(({ ok, data }) => {
+          submitBtn.disabled = false;
+          submitBtn.textContent = originalBtnText;
+
+          if (ok) {
+            if (successEl) {
+              successEl.textContent = "✅ " + (form.id === "volunteer-form"
+                ? "Thank you! Your volunteer registration has been received."
+                : "Thanks for your feedback!");
+              successEl.hidden = false;
+              setTimeout(() => { successEl.hidden = true; }, 6000);
+            }
+            form.reset();
+          } else if (successEl) {
+            const errorText = data && data.errors && data.errors.length
+              ? data.errors.map((e) => e.message).join(" ")
+              : "Something went wrong sending your message. Please try again.";
+            successEl.textContent = "⚠️ " + errorText;
+            successEl.hidden = false;
+          }
+        })
+        .catch(function (err) {
+          console.error("EduConnect: form submission failed.", err);
+          submitBtn.disabled = false;
+          submitBtn.textContent = originalBtnText;
+          if (successEl) {
+            successEl.textContent = "⚠️ Couldn't send — check your internet connection and try again.";
+            successEl.hidden = false;
+          }
+        });
+    }
+
+    /* ---- Volunteer form ---- */
+    const volunteerForm = document.getElementById("volunteer-form");
+    const volunteerSuccess = document.getElementById("volunteer-success");
+
+    if (volunteerForm) {
+      volunteerForm.addEventListener("submit", function (e) {
+        e.preventDefault();
+        let isFormValid = true;
+
+        const nameInput = document.getElementById("v-name");
+        const emailInput = document.getElementById("v-email");
+        const phoneInput = document.getElementById("v-phone");
+        const skillsInput = document.getElementById("v-skills");
+        const messageInput = document.getElementById("v-message");
+
+        const nameError = document.getElementById("err-v-name");
+        const emailError = document.getElementById("err-v-email");
+        const phoneError = document.getElementById("err-v-phone");
+        const skillsError = document.getElementById("err-v-skills");
+        const messageError = document.getElementById("err-v-message");
+
+        // Name
+        if (nameInput.value.trim().length < 2) {
+          showError(nameInput, nameError, "Please enter your full name.");
+          isFormValid = false;
+        } else {
+          clearError(nameInput, nameError);
+        }
+
+        // Email
+        if (!isValidEmail(emailInput.value.trim())) {
+          showError(emailInput, emailError, "Please enter a valid email address.");
+          isFormValid = false;
+        } else {
+          clearError(emailInput, emailError);
+        }
+
+        // Phone
+        if (!isValidPhone(phoneInput.value.trim())) {
+          showError(phoneInput, phoneError, "Please enter a valid 10-digit phone number.");
+          isFormValid = false;
+        } else {
+          clearError(phoneInput, phoneError);
+        }
+
+        // Skills (optional but no stray symbols if filled)
+        clearError(skillsInput, skillsError);
+
+        // Message (optional)
+        clearError(messageInput, messageError);
+
+        if (isFormValid) {
+          const submitBtn = volunteerForm.querySelector('button[type="submit"]');
+          submitFormByEmail(volunteerForm, volunteerSuccess, submitBtn);
+        } else if (volunteerSuccess) {
+          volunteerSuccess.hidden = true;
+        }
+      });
+    }
+
+    /* ---- Contact form ---- */
+    const contactForm = document.getElementById("contact-form");
+    const contactSuccess = document.getElementById("contact-success");
+
+    if (contactForm) {
+      contactForm.addEventListener("submit", function (e) {
+        e.preventDefault();
+        let isFormValid = true;
+
+        const nameInput = document.getElementById("c-name");
+        const emailInput = document.getElementById("c-email");
+        const messageInput = document.getElementById("c-message");
+
+        const nameError = document.getElementById("err-c-name");
+        const emailError = document.getElementById("err-c-email");
+        const messageError = document.getElementById("err-c-message");
+
+        if (nameInput.value.trim().length < 2) {
+          showError(nameInput, nameError, "Please enter your name.");
+          isFormValid = false;
+        } else {
+          clearError(nameInput, nameError);
+        }
+
+        if (!isValidEmail(emailInput.value.trim())) {
+          showError(emailInput, emailError, "Please enter a valid email address.");
+          isFormValid = false;
+        } else {
+          clearError(emailInput, emailError);
+        }
+
+        if (messageInput.value.trim().length < 5) {
+          showError(messageInput, messageError, "Please enter a short message.");
+          isFormValid = false;
+        } else {
+          clearError(messageInput, messageError);
+        }
+
+        if (isFormValid) {
+          const submitBtn = contactForm.querySelector('button[type="submit"]');
+          submitFormByEmail(contactForm, contactSuccess, submitBtn);
+        } else if (contactSuccess) {
+          contactSuccess.hidden = true;
+        }
+      });
+    }
+  } catch (err) {
+    console.error("EduConnect: form validation failed to initialise.", err);
+  }
+
+
+  /* =========================================================
+     7. FAQ ACCORDION
+     ========================================================= */
+  try {
+    document.querySelectorAll(".faq-question").forEach(function (question) {
+      question.addEventListener("click", function () {
+        const faqItem = question.closest(".faq-item");
+        const isOpen = faqItem.classList.contains("open");
+
+        // Close all other FAQ items first (accordion behaviour)
+        document.querySelectorAll(".faq-item").forEach(function (item) {
+          item.classList.remove("open");
+          item.querySelector(".faq-question").setAttribute("aria-expanded", "false");
+        });
+
+        // Re-open this one if it wasn't already open
+        if (!isOpen) {
+          faqItem.classList.add("open");
+          question.setAttribute("aria-expanded", "true");
+        }
+      });
+    });
+  } catch (err) {
+    console.error("EduConnect: FAQ accordion failed to initialise.", err);
+  }
+
+
+  /* =========================================================
+     8. SCROLL-TO-TOP BUTTON
+     ========================================================= */
+  try {
+    const scrollTopBtn = document.getElementById("scroll-top");
+
+    if (scrollTopBtn) {
+      window.addEventListener("scroll", function () {
+        scrollTopBtn.hidden = window.scrollY < 400;
+      });
+
+      scrollTopBtn.addEventListener("click", function () {
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      });
+    }
+  } catch (err) {
+    console.error("EduConnect: scroll-to-top button failed to initialise.", err);
+  }
+
+  /* =========================================================
+     9. FOOTER YEAR
+     ========================================================= */
+  try {
+    const footerYearEl = document.getElementById("footer-year");
+    if (footerYearEl) footerYearEl.textContent = new Date().getFullYear();
+  } catch (err) {
+    console.error("EduConnect: footer year failed to initialise.", err);
+  }
+
+});
+
+</script>
+</body>
+</html>
